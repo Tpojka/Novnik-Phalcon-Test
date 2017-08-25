@@ -1,10 +1,14 @@
-<h2>Secure Payment Form</h2>
-<form action="">
+{% block content %}
 
-    <input type="text" placeholder="First Name">
-    <input type="text" placeholder="Last Name">
-    <input type="text" placeholder="Credit Card Number">
-    <input type="text" placeholder="Credit Card CVV">
+<h2>{{ h2Title }}</h2>
+<form action="/add-card" method="POST">
+
+    <input type="text" name="firstName" placeholder="{{ firstName }}">
+    <input type="text" name="lastName" placeholder="{{ lastName }}">
+    <input type="text" name="creditCardNumber" placeholder="{{ creditCardNumber }}">
+    <input type="text" name="creditCardCvv" placeholder="{{ creditCardCvv }}">
     <input type="submit" placeholder="GO">
 
 </form>
+
+{% endblock %}

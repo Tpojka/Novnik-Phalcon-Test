@@ -132,6 +132,11 @@ return array(
                         'action' => "index",
                         'params' => 1
                     ));
+                    $router->add('/add-card', array(
+                        'module' => 'frontend',
+                        'controller' => 'index',
+                        'action' => 'addCreditCard'
+                    ))->setName('add-card');
                 }
                 $router->notFound(array(
                     'module' => 'frontend',
@@ -150,7 +155,7 @@ return array(
             'class' => function () {
                 $class = new View();
                 $class->registerEngines(array(
-                    '.phtml' => 'Phalcon\Mvc\View\Engine\Php'
+                    '.phtml' => 'Phalcon\Mvc\View\Engine\Volt',
                 ));
 
                 return $class;
