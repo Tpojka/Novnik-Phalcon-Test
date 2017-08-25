@@ -3,3 +3,8 @@ composer.lock
 vendor/
 node_modules/
 public/vendor/
+
+#Zend Studio files
+.buildpath
+.project
+.settings/

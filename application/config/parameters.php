@@ -4,8 +4,8 @@ return array(
     'db' => array(
         'adapter' => 'Mysql',
         'host' => 'localhost',
-        'username' => 'root',
-        'password' => '',
+        'username' => 'test_Usr',
+        'password' => 'test_Pass',
         'dbname' => 'test_Db',
         'options' => array(
             PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
