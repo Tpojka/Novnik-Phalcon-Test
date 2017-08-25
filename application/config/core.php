@@ -1,6 +1,7 @@
 <?php
 
 use Phalcon\Mvc\View;
+use Phalcon\Mvc\Router;
 
 date_default_timezone_set('US/Eastern');
 setlocale(LC_ALL, 'ru_RU.UTF-8');
