@@ -1,6 +1,7 @@
 <?php
 
 use Phalcon\Mvc\View;
+use Phalcon\Mvc\Router;
 
 date_default_timezone_set('US/Eastern');
 setlocale(LC_ALL, 'ru_RU.UTF-8');
@@ -149,7 +150,7 @@ return array(
             'class' => function () {
                 $class = new View();
                 $class->registerEngines(array(
-                    '.phtml' => 'Phalcon\Mvc\View\Engine\Php'
+                    '.phtml' => 'Phalcon\Mvc\View\Engine\Volt'
                 ));
 
                 return $class;
