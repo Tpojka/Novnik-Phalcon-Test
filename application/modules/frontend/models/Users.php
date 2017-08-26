@@ -1,5 +1,7 @@
 <?php
 
+namespace Frontend\Model;
+
 class Users extends \Phalcon\Mvc\Model
 {
     

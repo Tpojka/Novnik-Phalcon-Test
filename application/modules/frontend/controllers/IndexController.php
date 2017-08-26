@@ -8,6 +8,9 @@ use User\Model\Categories;
 use User\Model\Content;
 use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 
+use Frontend\Model\Users;
+use Phalcon\Http\Response;
+
 class IndexController extends Controller
 {
      private const validPostKeys = [
@@ -38,8 +41,27 @@ class IndexController extends Controller
             return $this->response->redirect();
         }
         
-        // Set flash message with form's errors
-        $this->validate($this->request->post());
+//         // Set flash message with form's errors
+//         $this->validate($this->request->post());
+
+//         var_dump($this->request->getPost());
+
+        $response = new Response;
+        
+        $response->setStatusCode(200, 'OK');
+
+        $this->view->disable();
+        
+        $response->setContent(json_encode($this->request->getPost()))->send();
+        
+//         $response->send();
+    }
+    
+    public function ourClientsAction()
+    {
+        $users = Users::find();
+        
+        return $users;
     }
 
 }
