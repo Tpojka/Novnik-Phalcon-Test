@@ -133,6 +133,13 @@ return array(
                         'params' => 1
                     ));
                 }
+                
+                $router->add('/ajaxAddUser', array( // @internal What is difference between this route and ones above inside curly braces
+                    'module' => 'frontend',
+                    'controller' => 'index',
+                    'action' => 'ajaxAddUser'
+                ));
+                
                 $router->notFound(array(
                     'module' => 'frontend',
                     'namespace' => 'Frontend\Controller',

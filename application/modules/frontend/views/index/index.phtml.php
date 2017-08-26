@@ -1,10 +1,10 @@
-<h2>Secure Payment Form</h2>
-<form action="">
+<h2><?= $h2Title ?></h2>
+<form action="ajaxAddUser" method="POST">
 
-    <input type="text" placeholder="First Name">
-    <input type="text" placeholder="Last Name">
-    <input type="text" placeholder="Credit Card Number">
-    <input type="text" placeholder="Credit Card CVV">
+	<input type="text" name="<?= $name_f_name ?>" placeholder="<?= $ph_f_name ?>">
+    <input type="text" name="<?= $name_l_name ?>" placeholder="<?= $ph_l_name ?>">
+    <input type="text" name="<?= $name_cc_number ?>" placeholder="<?= $ph_cc_number ?>">
+    <input type="text" name="<?= $name_cc_cvv ?>" placeholder="<?= $ph_cc_cvv ?>">
     <input type="submit" placeholder="GO">
 
 </form>
