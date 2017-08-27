@@ -166,7 +166,7 @@ class IndexController extends Controller
     
     private function checkInputKeys($posted)
     {
-        $diffKeys = array_dif_keys($posted, self::validPostKeys);
+        $diffKeys = array_diff_key($posted, self::validPostKeys);
         
         if (count($diffKeys)) { // posted keys doesn't belong to DB keys
             
@@ -175,7 +175,7 @@ class IndexController extends Controller
             return false;
         }
         
-        $diffKeys = array_dif_keys(self::validPostKeys, $posted);
+        $diffKeys = array_diff_key(self::validPostKeys, $posted);
         
         if (count($diffKeys)) { // posted keys are not sufficient
             
