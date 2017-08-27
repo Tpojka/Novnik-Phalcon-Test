@@ -1,0 +1,30 @@
+<div class="row">
+	<h2>{{ ourClients }}</h2>
+</div>
+<div class="row">
+	{% if users|length %}
+	<table class="table">
+        <thead>
+          <tr>
+            <th>{{ f_name }}</th>
+            <th>{{ l_name }}</th>
+            <th>{{ cc_number }}</th>
+            <th>{{ cc_cvv }}</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for index, user in users %}
+          <tr>
+            <td>user.f_name</td>
+            <td>user.l_name</td>
+            <td>user.cc_number</td>
+            <td>user.cc_cvv</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    {% if users|length < 1 %}
+    	<p>There is no clients in database.</p>
+    {% endif %}
+</div>
