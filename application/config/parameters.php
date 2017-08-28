@@ -1,5 +1,5 @@
 <?php
-define("BASE_URL","http://ful.local");
+define("BASE_URL","http://novnik-phalcon-test.dev");
 return array(
     'db' => array(
         'adapter' => 'Mysql',
