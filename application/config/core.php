@@ -3,9 +3,6 @@
 use Phalcon\Mvc\View;
 use Phalcon\Mvc\Router;
 
-use Phalcon\Flash\Direct as FlashDirect;
-use Phalcon\Flash\Session as FlashSession;
-
 date_default_timezone_set('US/Eastern');
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 
@@ -137,7 +134,7 @@ return array(
                     ));
                 }
                 
-                $router->add('/ajaxAddUser', array( // @internal What is difference between this route and ones above inside curly braces
+                $router->add('/ajaxAddUser', array(
                     'module' => 'frontend',
                     'controller' => 'index',
                     'action' => 'ajaxAddUser'
@@ -147,6 +144,12 @@ return array(
                     'module' => 'frontend',
                     'controller' => 'index',
                     'action' => 'ourClients'
+                ));
+                
+                $router->add('/saveUser', array(
+                    'module' => 'frontend',
+                    'controller' => 'index',
+                    'action' => 'saveUser'
                 ));
                 
                 $router->notFound(array(

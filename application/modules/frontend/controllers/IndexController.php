@@ -11,23 +11,30 @@ use Phalcon\Paginator\Adapter\Model as PaginatorModel;
 use Frontend\Model\Users;
 use Phalcon\Http\Response;
 
-use Phalcon\Validation;
-use Phalcon\Validation\Validator\Email;
-use Phalcon\Validation\Validator\Digit;
-use Phalcon\Validation\Validator\CreditCard;
-use Phalcon\Validation\Validator\PresenceOf;
+use Phalcon\Filter;
 
+use Phalcony\Validator\Exception;
+
+/**
+ * Class IndexController
+ * @package Frontend\Controller
+ */
 
 class IndexController extends Controller
 {
-     private const validPostKeys = [
+     private const validPostKeys = [// expectingpost keys; should be done with model metadata attributes
          'f_name' => 'First Name', 
          'l_name' => 'Last Name',
          'cc_number' => 'Credit Card Number', 
          'cc_cvv' => 'Credit Card CVV',
      ];
+//     properties are not allowed
 //     https://stackoverflow.com/questions/41421368/php-cannot-access-private-property-inside-class#answer-41544525
     
+    /**
+     * @return mixed|void
+     * @throws Exception
+     */
     public function indexAction()
     {
         $this->view->h2Title = 'Secure Payment Form'; // setting page title volt variable
@@ -42,147 +49,97 @@ class IndexController extends Controller
         }
     }
     
+    
+    /**
+     * Inserts new User model data
+     * @param string serialized string of POST data
+     * @return bool false|string JSON string of newly inserted model
+     */    
     public function ajaxAddUserAction()
     {
-        if (!$this->request->isAjax()) { // redirect non-AJAX requests
-            return $this->response->redirect();
-        }
-
-        $posted = $this->request->getPost();
-        
-        if (!$this->validateInput($posted)) { // Validator used to check post
-            return $this->response->redirect(); // should be set flash message
-        }
-
-        $user = new Users();
-        
-        $user->f_name = trim($posted['f_name']);
-        
-        $user->l_name = trim($posted['l_name']);
-        
-        $user->cc_number = trim($posted['cc_number']);
-        
-        $user->cc_cvv = trim($posted['cc_cvv']);
-        
-        if ($user->save() === false) {
-            $errorMessage = "Saving data failed. Please contact our <a href=\"mailto:admin@novnik.com?Subject=Alert:%20Data%20insert%20failed\" target=\"_top\">administrator</a> to help you with issue.";
-        }
-        
         $response = new Response;
         
-        $response->setStatusCode(200, 'OK');
-
-        $this->view->disable();
+        if (!$this->request->isAjax() || !$this->request->isPost()) { // redirect non-AJAX or non-POST requests to form page
+            
+            return $response->redirect();
+        }
         
-        $response->setContent(json_encode($errorMessage))->send();
+//         try {
+            $user = new Users();
+            
+            $user->f_name = $this->request->getPost('f_name', ['trim', 'striptags', 'string']);
+            
+            $user->l_name = $this->request->getPost('l_name', ['trim', 'striptags', 'string']);
+            
+            $user->cc_number = $this->request->getPost('cc_number', ['trim', 'striptags', 'int']);
+            
+            $user->cc_cvv = $this->request->getPost('cc_cvv', ['trim', 'striptags', 'int']);
+            
+            $savingError = false;
+            
+            $saved = $user->save();
+            
+            if ($saved === false) {
+                
+                $messages = $user->getMessages();
+                
+                $response->setStatusCode(412, 'Precondition Failed');
+                $response->setContent('2556' . json_encode($messages));
+                
+                $savingError = true;
+            }
+            
+//         } catch (Exception $e) {
+//             $response->setStatusCode(500, 'Internal Server Error');
+//             $response->setContent($e->getMessage()); // @todo for debugging purposes, remove message in production
+            
+//             $response->send();
+            
+//             exit;
+//         }
+        
+        if ($savingError !== true) { // user is saved
+            
+            $response->setStatusCode(201, 'Created');
+            $response->setContent(json_encode($saved));
+        }
+        
+        $response->send();
+        
+        $this->view->disable(); // whole method is ajax response so we don't need volt
+        
     }
+    
+    
+    /**
+     * List of all existing users
+     * @return object $users resultSet
+     */
     
     public function ourClientsAction()
     {
         $users = Users::find(); // get users from DB
         
         $this->view->ourClients = "Our Clients";
-        $this->view->users = $users;
+        $this->view->users = $users; // we bind results to volt variables
         
         foreach (self::validPostKeys as $k => $v) { // setting form field volt variables
             
             $tableHeader = $k;
-            $this->view->{$tableHeader} = $v;
+            $this->view->{$tableHeader} = $v; // dynamically set table header 
         }
     }
+    
+    
+    /**
+     * Validate POST data
+     * @param array $posted array from $_POST
+     * @return boolean whether validate passed or failed 
+     */
     
     private function validateInput($posted)
     {
-        if (!$this->checkInputKeys($posted)) { // keys are not ones we are expecting
-            return false;
-        }
         
-        $validation = new Validation();
-        
-        $validation->add(
-            'f_name',
-            new PresenceOf(
-                [
-                    'message' => 'First name is required',
-                ]
-                )
-            );
-        
-        $validation->add(
-            'l_name',
-            new PresenceOf(
-                [
-                    'message' => 'Last name is required',
-                ]
-                )
-            );
-        
-        $validation->add(
-            'cc_number',
-            new PresenceOf(
-                [
-                    'message' => 'Credit card number is required.',
-                ]
-                )
-            );
-        
-        $validation->add(
-            'cc_cvv',
-            new PresenceOf(
-                [
-                    'message' => 'Code is required.',
-                ]
-                )
-            );
-        
-        $validation->add(
-            'cc_number',
-            new CreditCard(
-                [
-                    'message' => 'Valid credit card number is required.',
-                ]
-                )
-            );
-        
-        $validation->add(
-            'cc_cvv',
-            new Digit(
-                [
-                    'message' => 'Valid number is required.',
-                ]
-                )
-            );
-        
-        $messages = $validation->validate($posted);
-        
-        if (count($messages)) { // some field didn't pass validation
-            foreach ($messages as $message) { 
-//                 echo $message, '<br>'; // message should be set into flash messages
-            }
-            
-            return false; // no more mister nice guy
-        }
-    }
-    
-    private function checkInputKeys($posted)
-    {
-        $diffKeys = array_diff_key($posted, self::validPostKeys);
-        
-        if (count($diffKeys)) { // posted keys doesn't belong to DB keys
-            
-            $diffKeys = [];
-            
-            return false;
-        }
-        
-        $diffKeys = array_diff_key(self::validPostKeys, $posted);
-        
-        if (count($diffKeys)) { // posted keys are not sufficient
-            
-            $diffKeys = [];
-            
-            return false;
-        }
     }
 
 }

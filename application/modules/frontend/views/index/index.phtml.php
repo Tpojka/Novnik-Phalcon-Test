@@ -16,87 +16,65 @@
 	<p class="response-text" style="visibility: hidden"></p>
 </div>
 
+<script>
+	$("#addUser").validate({
 
-    <script>
-    	$(document).ready(function(){
-        	$("#addUser").submit(function(e){
+        rules: {
+            <?= $name_f_name ?>: "required",
+            
+            <?= $name_l_name ?>: "required",
+            
+            <?= $name_cc_number ?>: {
+              required: true,
+              creditcard: true
+            },
+            
+            <?= $name_cc_cvv ?>: {
+              required: true,
+              number: true,
+              maxlength: 4
+            }
+        },
+		
+		submitHandler: function(form) {
 
-        		var <?= $name_f_name ?> = $('input[name="<?= $name_f_name ?>"]').val();
-        			<?= $name_l_name ?> = $('input[name="<?= $name_l_name ?>"]').val(),
-        			<?= $name_cc_number ?> = $('input[name="<?= $name_cc_number ?>"]').val(),
-        			<?= $name_cc_cvv ?> = $('input[name="<?= $name_cc_cvv ?>"]').val();
-
-        		console.log(<?= $name_f_name ?>);
-
-                $("#addUser").validate({
-
-                	errorElement: "em",
-
-        			rules: {
-        			    // simple rule, converted to {required:true}
-        				<?= $name_f_name ?>: "required",
-
-        				<?= $name_l_name ?>: "required",
-
-        				<?= $name_cc_number ?>: {
-							required: true,
-							creditcard: true
-        				},
-
-        				<?= $name_cc_cvv ?>: {
-							required: true,
-							number: true,
-							maxlength: 4
-        				}
-        			  },
-                    
-                    submitHandler: function() {
-                    	$(".response-text").css( "visibility", "visible" );
-
-                    	var responseText;
-
-						$.ajax({
-                            method: "POST",
-                            url: "/ajaxAddUser",
-                            data: $("#addUser").serialize()
-						})
-						  .done(function(data, textStatus, xhr) {
-
-							  var respondedXhr = xhr;
-
-							  passedText = "You'll be redirected to clients list.";
-
-							  failedText = "Something went wrong with data saving. Please contact administrator. You'll be redirected to form page.";
-
-
-            				  window.setTimeout(function(respondedXhr){// redirect user after 5 seconds
-
-									if (xhr.status == 200) {
-										
-										window.location.href = "/ourClients";
-										
-									} else {
-										
-										window.location.href = "/";
-									}
-
-      						    }, 5000);
-
-							if (respondedXhr.status != 200) {
-								$(".response-text").text(failedText);
-							} else {
-								$(".response-text").text(passedText);
-							}
-							
-        				  })
-        				  .always(function(data, textStatus, xhr){
-        					  $(".response-text").css("visibility", "visible");
-        				  });
-                    }
-                });
-
-                e.preventDefault();
-        	});
-    		
-    	});
-    </script>
+			var options = {
+				url: '/ajaxAddUser',
+	    		method: 'POST',
+	    		data: {
+	    			f_name: 	$('<?= $name_f_name ?>').val(), 
+	    			l_name: 	$('<?= $name_l_name ?>').val(),
+	    			cc_number: 	$('<?= $name_cc_number ?>').val(),
+	    			cc_cvv: 	$('<?= $name_cc_cvv ?>').val()
+	    		},
+	    		success: function(data, statusText, xhr) {
+	    
+	    			if (xhr.status == 201) {
+	    				$('.response-text').text("You'll be redirected to Clients list page.");
+	    			} else {
+		    			console.log(data);
+	    				$('.response-text').text("Something went wrong. You'll be redirected to Form page again.");
+	    			}
+	    
+	    			$('.response-text').css({
+	    				visibility: "visible"
+	    			});
+	    
+	    			window.setTimeout(function(){// redirect user after 3 seconds
+	    
+	    				if (xhr.status != 201) {
+	    					alert("Line 67 " + xhr.status); // @todo on response cc_number is null
+	    					window.location.href = "/";
+	    				} else {
+	    					alert("Line 70 " + xhr.status);
+	    					window.location.href = "/ourClients";
+	    				}
+	    
+	    		    }, 3000000);
+	    		}
+			}
+			
+			$(form).ajaxSubmit(options);
+		}
+	});
+</script>

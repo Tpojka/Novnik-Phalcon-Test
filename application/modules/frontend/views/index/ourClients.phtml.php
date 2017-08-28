@@ -15,10 +15,10 @@
         <tbody>
         <?php foreach ($users as $index => $user) { ?>
           <tr>
-            <td>user.f_name</td>
-            <td>user.l_name</td>
-            <td>user.cc_number</td>
-            <td>user.cc_cvv</td>
+            <td><?= $user->f_name ?></td>
+            <td><?= $user->l_name ?></td>
+            <td><?= $user->cc_number ?></td>
+            <td><?= $user->cc_cvv ?></td>
           </tr>
         <?php } ?>
         </tbody>
