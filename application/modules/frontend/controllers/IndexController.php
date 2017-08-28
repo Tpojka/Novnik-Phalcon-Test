@@ -13,8 +13,6 @@ use Phalcon\Http\Response;
 
 use Phalcon\Filter;
 
-use Phalcony\Validator\Exception;
-
 /**
  * Class IndexController
  * @package Frontend\Controller
@@ -64,44 +62,37 @@ class IndexController extends Controller
             return $response->redirect();
         }
         
-//         try {
-            $user = new Users();
+        $user = new Users(); // Here we create model for new record
+        
+        $user->f_name = $this->request->getPost('f_name');
+        
+        $user->l_name = $this->request->getPost('l_name');
+        
+        $user->cc_number = $this->request->getPost('cc_number');
+        
+        $user->cc_cvv = $this->request->getPost('cc_cvv');
+        
+        $savingError = false;
+        
+        $saved = $user->save();
+        
+        if ($saved === false) {
             
-            $user->f_name = $this->request->getPost('f_name', ['trim', 'striptags', 'string']);
+            $messages = $user->getMessages();
             
-            $user->l_name = $this->request->getPost('l_name', ['trim', 'striptags', 'string']);
+            $response->setStatusCode(412, 'Precondition Failed');
+            $response->setContent('2556' . json_encode($messages));
             
-            $user->cc_number = $this->request->getPost('cc_number', ['trim', 'striptags', 'int']);
-            
-            $user->cc_cvv = $this->request->getPost('cc_cvv', ['trim', 'striptags', 'int']);
-            
-            $savingError = false;
-            
-            $saved = $user->save();
-            
-            if ($saved === false) {
-                
-                $messages = $user->getMessages();
-                
-                $response->setStatusCode(412, 'Precondition Failed');
-                $response->setContent('2556' . json_encode($messages));
-                
-                $savingError = true;
-            }
-            
-//         } catch (Exception $e) {
-//             $response->setStatusCode(500, 'Internal Server Error');
-//             $response->setContent($e->getMessage()); // @todo for debugging purposes, remove message in production
-            
-//             $response->send();
-            
-//             exit;
-//         }
+            $savingError = true;
+        }
         
         if ($savingError !== true) { // user is saved
             
             $response->setStatusCode(201, 'Created');
             $response->setContent(json_encode($saved));
+        } else {
+            $response->setStatusCode(500, 'Internal Server Error');
+            $response->setContent(json_encode('Saving failed.'));
         }
         
         $response->send();
