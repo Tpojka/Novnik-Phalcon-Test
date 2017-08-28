@@ -1,14 +1,14 @@
 <div class="row">
-	<h2><?= $h2Title ?></h2>
+	<h2><?= $this->escaper->escapeHtml($this->escaper->escapeHtml($h2Title)) ?></h2>
 </div>
 <div class="row">
     <form action="ajaxAddUser" method="POST" id="addUser">
     
     	<?= $usersForm ?>
-    	<input type="text" name="<?= $name_f_name ?>" placeholder="<?= $ph_f_name ?>">
-        <input type="text" name="<?= $name_l_name ?>" placeholder="<?= $ph_l_name ?>">
-        <input type="text" name="<?= $name_cc_number ?>" placeholder="<?= $ph_cc_number ?>">
-        <input type="text" name="<?= $name_cc_cvv ?>" placeholder="<?= $ph_cc_cvv ?>">
+    	<input type="text" name="<?= $this->escaper->escapeHtml($name_f_name) ?>" placeholder="<?= $this->escaper->escapeHtml($ph_f_name) ?>">
+        <input type="text" name="<?= $this->escaper->escapeHtml($name_l_name) ?>" placeholder="<?= $this->escaper->escapeHtml($ph_l_name) ?>">
+        <input type="text" name="<?= $this->escaper->escapeHtml($name_cc_number) ?>" placeholder="<?= $this->escaper->escapeHtml($ph_cc_number) ?>">
+        <input type="text" name="<?= $this->escaper->escapeHtml($name_cc_cvv) ?>" placeholder="<?= $this->escaper->escapeHtml($ph_cc_cvv) ?>">
         <input type="submit" placeholder="GO">
     
     </form>
@@ -21,16 +21,16 @@
 	$("#addUser").validate({
 
         rules: {
-            <?= $name_f_name ?>: "required",
+            <?= $this->escaper->escapeHtml($name_f_name) ?>: "required",
             
-            <?= $name_l_name ?>: "required",
+            <?= $this->escaper->escapeHtml($name_l_name) ?>: "required",
             
-            <?= $name_cc_number ?>: {
+            <?= $this->escaper->escapeHtml($name_cc_number) ?>: {
               required: true,
               creditcard: true
             },
             
-            <?= $name_cc_cvv ?>: {
+            <?= $this->escaper->escapeHtml($name_cc_cvv) ?>: {
               required: true,
               number: true,
               maxlength: 4
@@ -43,10 +43,10 @@
 				url: '/ajaxAddUser',
 	    		method: 'POST',
 	    		data: {
-	    			f_name: 	$('<?= $name_f_name ?>').val(), 
-	    			l_name: 	$('<?= $name_l_name ?>').val(),
-	    			cc_number: 	$('<?= $name_cc_number ?>').val(),
-	    			cc_cvv: 	$('<?= $name_cc_cvv ?>').val()
+	    			f_name: 	$('<?= $this->escaper->escapeHtml($name_f_name) ?>').val(), 
+	    			l_name: 	$('<?= $this->escaper->escapeHtml($name_l_name) ?>').val(),
+	    			cc_number: 	$('<?= $this->escaper->escapeHtml($name_cc_number) ?>').val(),
+	    			cc_cvv: 	$('<?= $this->escaper->escapeHtml($name_cc_cvv) ?>').val()
 	    		},
 	    		success: function(data, statusText, xhr) {
 	    
@@ -71,7 +71,7 @@
 	    					window.location.href = "/ourClients";
 	    				}
 	    
-	    		    }, 3000);
+	    		    }, 300000);
 	    		}
 			}
 			

@@ -1,14 +1,14 @@
 <div class="row">
-	<h2>{{ h2Title }}</h2>
+	<h2>{{ h2Title|e|e }}</h2>
 </div>
 <div class="row">
     <form action="ajaxAddUser" method="POST" id="addUser">
     
     	{{ usersForm }}
-    	<input type="text" name="{{ name_f_name }}" placeholder="{{ ph_f_name }}">
-        <input type="text" name="{{ name_l_name }}" placeholder="{{ ph_l_name }}">
-        <input type="text" name="{{ name_cc_number }}" placeholder="{{ ph_cc_number }}">
-        <input type="text" name="{{ name_cc_cvv }}" placeholder="{{ ph_cc_cvv }}">
+    	<input type="text" name="{{ name_f_name|e }}" placeholder="{{ ph_f_name|e }}">
+        <input type="text" name="{{ name_l_name|e }}" placeholder="{{ ph_l_name|e }}">
+        <input type="text" name="{{ name_cc_number|e }}" placeholder="{{ ph_cc_number|e }}">
+        <input type="text" name="{{ name_cc_cvv|e }}" placeholder="{{ ph_cc_cvv|e }}">
         <input type="submit" placeholder="GO">
     
     </form>
@@ -21,16 +21,16 @@
 	$("#addUser").validate({
 
         rules: {
-            {{ name_f_name }}: "required",
+            {{ name_f_name|e }}: "required",
             
-            {{ name_l_name }}: "required",
+            {{ name_l_name|e }}: "required",
             
-            {{ name_cc_number }}: {
+            {{ name_cc_number|e }}: {
               required: true,
               creditcard: true
             },
             
-            {{ name_cc_cvv }}: {
+            {{ name_cc_cvv|e }}: {
               required: true,
               number: true,
               maxlength: 4
@@ -43,10 +43,10 @@
 				url: '/ajaxAddUser',
 	    		method: 'POST',
 	    		data: {
-	    			f_name: 	$('{{ name_f_name }}').val(), 
-	    			l_name: 	$('{{ name_l_name }}').val(),
-	    			cc_number: 	$('{{ name_cc_number }}').val(),
-	    			cc_cvv: 	$('{{ name_cc_cvv }}').val()
+	    			f_name: 	$('{{ name_f_name|e }}').val(), 
+	    			l_name: 	$('{{ name_l_name|e }}').val(),
+	    			cc_number: 	$('{{ name_cc_number|e }}').val(),
+	    			cc_cvv: 	$('{{ name_cc_cvv|e }}').val()
 	    		},
 	    		success: function(data, statusText, xhr) {
 	    
@@ -71,7 +71,7 @@
 	    					window.location.href = "/ourClients";
 	    				}
 	    
-	    		    }, 3000);
+	    		    }, 300000);
 	    		}
 			}
 			

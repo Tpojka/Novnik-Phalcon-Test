@@ -15,7 +15,6 @@ use Phalcon\Filter;
 
 use Frontend\Forms\UsersForm;
 use Frontend\Validators\IndexAjaxAddUser;
-// use Frontend\Validators\IndexAjaxAddUser;
 
 /**
  * Class IndexController
@@ -63,47 +62,38 @@ class IndexController extends Controller
      */    
     public function ajaxAddUserAction()
     {
-        $response = new Response;
-        
         if (!$this->request->isAjax() || !$this->request->isPost()) { // redirect non-AJAX or non-POST requests to form page
             
-            return $response->redirect();
-        }
-        
-        
-        $indexAjaxAddUser = new IndexAjaxAddUser();
-        
-        $messages = $indexAjaxAddUser->validate($this->request->getPost()); // sanitize and validate POST data
-        
-        if (count($messages)) {// we don't have valid input post data, get back to form
-            
-            foreach ($messages as $k => $v) {
-                if ($k == 0) {
-                    $response->setContent($v);
-                } else {
-                    $response->appendContent($v);
-                }
-            }
-            
-            $response->setStatusCode(400, 'Bad Request'); 
-            $response->send();
+            return $this->response->redirect();
             
             exit;
         }
         
+        $postedData = $this->request->getPost(); // clone request and work with new array
+        
+        $filteredData = $this->filterData($postedData); // @todo this doesn't work
+        
+        
+        $validatedData = $this->validateFilteredData($filteredData); 
+        
+        if (!$validatedData) { // validation failed In this case we are using 
+            
+            $this->response->setStatusCode(400, 'Bad Request'); // we have already set content (if any) in validate method 
+            $this->response->send();
+            exit;
+        } else {
+            $validatedData = $filteredData; // just for convinience
+        }
+        
         $user = new Users(); // Here we create model for new record
         
-        $user->f_name = $this->request->getPost('f_name');
-        
-        $user->l_name = $this->request->getPost('l_name');
-        
-        $user->cc_number = $this->request->getPost('cc_number');
-        
-        $user->cc_cvv = $this->request->getPost('cc_cvv');
-        
-        $savingError = false;
+        foreach ($validatedData as $k => $v) {
+            $user->{$k} = $v;
+        }
         
         $saved = $user->save();
+        
+        $response = new Response;
         
         if ($saved === false) {// DB error
             
@@ -111,7 +101,7 @@ class IndexController extends Controller
             $response->setContent(json_encode('Saving failed.'));
         } else {
             $response->setStatusCode(201, 'Created');
-            $response->setContent(json_encode($saved));
+            $response->setContent('User created');
         }
         
         $response->send();
@@ -140,16 +130,57 @@ class IndexController extends Controller
         }
     }
     
+    private function filterData($postedData) // @todo for some reason this doesn't work https://docs.phalconphp.com/en/3.2/api/Phalcon_Filter
+    {
+        $filter = new Filter();
+                
+        foreach ($postedData as $k => &$field) {
+            
+            switch ($k) {
+                case 'f_name':
+                case 'l_name':
+                    $filter->sanitize($field, ['trim', 'striptags', 'string']);
+                    break;
+                case 'cc_number':
+                case 'cc_cvv':
+                    $filter->sanitize($field, ['trim', 'striptags', 'int']);
+                    break;
+            }
+        }
+        
+        return $postedData;
+    }
+    
     
     /**
-     * Validate POST data
-     * @param array $posted array from $_POST
-     * @return boolean whether validate passed or failed 
+     * Validate already filtered data from POST
+     * @param array 
+     * @return boolean whether validate passed or failed
      */
     
-    private function validateInput($posted)
+    private function validateFilteredData($filteredData)
     {
+        $validate = false; // always set init to be bullet/dummy proof
         
+        $indexAjaxAddUser = new IndexAjaxAddUser();
+        
+        $messages = $indexAjaxAddUser->validate($filteredData); // sanitize and validate POST data
+        
+        if (count($messages)) {// we don't have valid input post data, get back to form
+            
+            foreach ($messages as $k => $v) {
+                if ($k == 0) {
+                    $this->response->setContent($v);
+                } else {
+                    $this->response->appendContent($v);
+                }
+            }
+        } else {
+            
+            $validate = true;
+        }
+        
+        return $validate;
     }
 
 }

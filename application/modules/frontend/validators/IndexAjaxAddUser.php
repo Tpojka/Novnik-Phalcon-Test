@@ -13,12 +13,6 @@ class IndexAjaxAddUser extends Validation
 {
     public function initialize()
     {
-        $this->setFilters('f_name', ['trim', 'striptags', 'string']); // Sanitize data
-        $this->setFilters('l_name', ['trim', 'striptags', 'string']);
-        $this->setFilters('cc_number', ['trim', 'striptags', 'int']);
-        $this->setFilters('cc_cvv', ['trim', 'striptags', 'int']);
-         
-        
         $this->add( // first name is not blank
             'f_name',
             new PresenceOf(
