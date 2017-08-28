@@ -63,14 +63,14 @@
 	    			window.setTimeout(function(){// redirect user after 3 seconds
 	    
 	    				if (xhr.status != 201) {
-	    					alert("Line 67 " + xhr.status); // @todo on response cc_number is null
+// 	    					alert("Line 67 " + xhr.status); // @todo on response cc_number is null
 	    					window.location.href = "/";
 	    				} else {
-	    					alert("Line 70 " + xhr.status);
+// 	    					alert("Line 70 " + xhr.status);
 	    					window.location.href = "/ourClients";
 	    				}
 	    
-	    		    }, 3000000);
+	    		    }, 3000);
 	    		}
 			}
 			
