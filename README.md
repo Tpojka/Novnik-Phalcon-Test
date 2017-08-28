@@ -14,7 +14,7 @@ Tasks
 Requirements
 ------------
 
-* PHP 5.7 and up
+* PHP 5.6|7.0 and up
 * Phalcon **3.0.0**
 
 License
