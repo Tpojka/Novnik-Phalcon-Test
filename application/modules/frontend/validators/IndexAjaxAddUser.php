@@ -17,7 +17,7 @@ class IndexAjaxAddUser extends Validation
             'f_name',
             new PresenceOf(
                 [
-                    'message' => 'First name is required',
+                    'message' => "First name is required.\n",
                 ]
                 )
             );
@@ -26,7 +26,7 @@ class IndexAjaxAddUser extends Validation
             'l_name',
             new PresenceOf(
                 [
-                    'message' => 'Last name is required',
+                    'message' => "Last name is required.\n",
                 ]
                 )
             );
@@ -35,7 +35,7 @@ class IndexAjaxAddUser extends Validation
             'cc_number',
             new PresenceOf(
                 [
-                    'message' => 'Credit card number is required.',
+                    'message' => "Credit card number is required.\n",
                 ]
                 )
             );
@@ -44,7 +44,7 @@ class IndexAjaxAddUser extends Validation
             'cc_cvv',
             new PresenceOf(
                 [
-                    'message' => 'Code is required.',
+                    'message' => "Code is required.\n",
                 ]
                 )
             );
@@ -53,7 +53,7 @@ class IndexAjaxAddUser extends Validation
             'cc_number',
             new CreditCard( // cc number is valid card number
                 [
-                    'message' => 'Valid credit card number is required.',
+                    'message' => "Valid credit card number is required.\n",
                 ]
                 )
             );
@@ -62,7 +62,7 @@ class IndexAjaxAddUser extends Validation
             'cc_cvv',
             new Digit(
                 [
-                    'message' => 'Valid number is required.',
+                    'message' => "Valid number is required.\n",
                 ]
                 )
             );
@@ -71,7 +71,7 @@ class IndexAjaxAddUser extends Validation
             'cc_number',
             new Uniqueness( 
                 [
-                    'message' => 'Invalid card number.', // don't let know it is registered
+                    'message' => "Invalid card number.\n", // don't let know it is registered
                     'model' => new Users,
                 ]
                 )

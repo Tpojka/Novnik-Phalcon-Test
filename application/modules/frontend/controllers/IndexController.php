@@ -23,7 +23,7 @@ use Frontend\Validators\IndexAjaxAddUser;
 
 class IndexController extends Controller
 {
-     private const validPostKeys = [// expectingpost keys; should be done with model metadata attributes
+     private const validPostKeys = [// expecting post keys; should be done with model metadata attributes
          'f_name' => 'First Name', 
          'l_name' => 'Last Name',
          'cc_number' => 'Credit Card Number', 
@@ -69,12 +69,21 @@ class IndexController extends Controller
             exit;
         }
         
-        $postedData = $this->request->getPost(); // clone request and work with new array
+        $postedData = []; 
         
-        $filteredData = $this->filterData($postedData); // @todo this doesn't work
+        foreach (self::validPostKeys as $k => $v) { // forming array of filtered / sanitized data
+            switch ($k) {
+                case 'f_name':
+                case 'l_name':
+                    $postedData[$k] = $this->request->getPost($k, ["striptags", "alphanum", "trim", "string"]);
+                    break;
+                case 'cc_number':
+                case 'cc_cvv':
+                    $postedData[$k] = $this->request->getPost($k, ["striptags", "alphanum", "trim", "int"]);
+            }
+        }
         
-        
-        $validatedData = $this->validateFilteredData($filteredData); 
+        $validatedData = $this->validateFilteredData($postedData); 
         
         if (!$validatedData) { // validation failed In this case we are using 
             
@@ -82,7 +91,7 @@ class IndexController extends Controller
             $this->response->send();
             exit;
         } else {
-            $validatedData = $filteredData; // just for convinience
+            $validatedData = $postedData;
         }
         
         $user = new Users(); // Here we create model for new record
@@ -91,14 +100,19 @@ class IndexController extends Controller
             $user->{$k} = $v;
         }
         
-        $saved = $user->save();
+        
+        try {
+            $saved = $user->save();
+        } catch (\Exception $e) {
+            $dbError = $e->getMessage();
+        }
         
         $response = new Response;
         
         if ($saved === false) {// DB error
             
             $response->setStatusCode(500, 'Internal Server Error');
-            $response->setContent(json_encode('Saving failed.'));
+            $response->setContent($dbError); // @todo tpojka just for dev, not for production
         } else {
             $response->setStatusCode(201, 'Created');
             $response->setContent('User created');
@@ -134,16 +148,16 @@ class IndexController extends Controller
     {
         $filter = new Filter();
                 
-        foreach ($postedData as $k => &$field) {
+        foreach ($postedData as $k => $field) {
             
             switch ($k) {
                 case 'f_name':
                 case 'l_name':
-                    $filter->sanitize($field, ['trim', 'striptags', 'string']);
+                    $filter->sanitize($field, ['trim', 'alphanum', 'striptags', 'string']);
                     break;
                 case 'cc_number':
                 case 'cc_cvv':
-                    $filter->sanitize($field, ['trim', 'striptags', 'int']);
+                    $filter->sanitize($field, ['trim', 'alphanum', 'striptags', 'int']);
                     break;
             }
         }
