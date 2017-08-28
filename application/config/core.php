@@ -57,6 +57,7 @@ return array(
                         $module = new Frontend\Module();
                         $module->registerServices($application->getDI());
                         $module->registerAutoloaders($application->getDI());
+//                         $module->registerDirectories($application->getDI());
                     }
 
                     /**

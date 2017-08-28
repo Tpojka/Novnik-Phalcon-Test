@@ -172,11 +172,6 @@ class Users extends Model
     {
         $validator = new Validation();
         
-        $validator->setFilters('f_name', ['trim', 'striptags', 'string']); // Sanitize data
-        $validator->setFilters('l_name', ['trim', 'striptags', 'string']);
-        $validator->setFilters('cc_number', ['trim', 'striptags', 'int']);
-        $validator->setFilters('cc_cvv', ['trim', 'striptags', 'int']);
-        
         $validator->add( // first name is not blank
             'f_name',
             new PresenceOf(
@@ -233,7 +228,7 @@ class Users extends Model
         
         $validator->add( // cc cvv is unique number
             'cc_number',
-            new Uniqueness( // @todo for some reason this rule doesn't work
+            new Uniqueness(
                 [
                     'message' => 'Invalid card number.', // don't let know it is registered
                     'model' => $this,
@@ -241,9 +236,7 @@ class Users extends Model
                 )
             );
         
-        $request = new \Phalcon\Http\Request();
-        
-        return $validator->validate($request->getPost()); // Validate data
+        return $this->validate($validator); // Validate data
     }
     
 }

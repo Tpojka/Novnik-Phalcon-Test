@@ -13,6 +13,8 @@ class Module
         $loader->registerNamespaces(array(
             'Frontend\Controller' => APPLICATION_PATH . '/modules/frontend/controllers/',
             'Frontend\Model' => APPLICATION_PATH . '/modules/frontend/models/',
+//             'Frontend\Forms' => APPLICATION_PATH . '/modules/frontend/forms/',
+            'Frontend\Validators' => APPLICATION_PATH . '/modules/frontend/validators/',
         ));
         $loader->register();
     }

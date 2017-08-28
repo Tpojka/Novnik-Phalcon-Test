@@ -13,6 +13,10 @@ use Phalcon\Http\Response;
 
 use Phalcon\Filter;
 
+use Frontend\Forms\UsersForm;
+use Frontend\Validators\IndexAjaxAddUser;
+// use Frontend\Validators\IndexAjaxAddUser;
+
 /**
  * Class IndexController
  * @package Frontend\Controller
@@ -35,6 +39,10 @@ class IndexController extends Controller
      */
     public function indexAction()
     {
+        $usersForm = new UsersForm;
+        
+        $this->view->usersForm = $usersForm->render('csrf');
+        
         $this->view->h2Title = 'Secure Payment Form'; // setting page title volt variable
         
         foreach (self::validPostKeys as $k => $v) { // setting form field volt variables
@@ -62,6 +70,27 @@ class IndexController extends Controller
             return $response->redirect();
         }
         
+        
+        $indexAjaxAddUser = new IndexAjaxAddUser();
+        
+        $messages = $indexAjaxAddUser->validate($this->request->getPost()); // sanitize and validate POST data
+        
+        if (count($messages)) {// we don't have valid input post data, get back to form
+            
+            foreach ($messages as $k => $v) {
+                if ($k == 0) {
+                    $response->setContent($v);
+                } else {
+                    $response->appendContent($v);
+                }
+            }
+            
+            $response->setStatusCode(400, 'Bad Request'); 
+            $response->send();
+            
+            exit;
+        }
+        
         $user = new Users(); // Here we create model for new record
         
         $user->f_name = $this->request->getPost('f_name');
@@ -76,23 +105,13 @@ class IndexController extends Controller
         
         $saved = $user->save();
         
-        if ($saved === false) {
+        if ($saved === false) {// DB error
             
-            $messages = $user->getMessages();
-            
-            $response->setStatusCode(412, 'Precondition Failed');
-            $response->setContent('2556' . json_encode($messages));
-            
-            $savingError = true;
-        }
-        
-        if ($savingError !== true) { // user is saved
-            
-            $response->setStatusCode(201, 'Created');
-            $response->setContent(json_encode($saved));
-        } else {
             $response->setStatusCode(500, 'Internal Server Error');
             $response->setContent(json_encode('Saving failed.'));
+        } else {
+            $response->setStatusCode(201, 'Created');
+            $response->setContent(json_encode($saved));
         }
         
         $response->send();
