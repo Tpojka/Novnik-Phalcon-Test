@@ -71,7 +71,7 @@
 	    					window.location.href = "/ourClients";
 	    				}
 	    
-	    		    }, 300000);
+	    		    }, 3000);
 	    		}
 			}
 			
