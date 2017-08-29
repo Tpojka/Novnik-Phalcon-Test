@@ -56,7 +56,7 @@ class IndexController extends Controller
     
     
     /**
-     * Inserts new User model data
+     * Inserts new User model data over AJAX request
      * @param string serialized string of POST data
      * @return bool false|string JSON string of newly inserted model
      */    
@@ -69,29 +69,30 @@ class IndexController extends Controller
             exit;
         }
         
-        $postedData = []; 
+        $filteredData = []; 
         
         foreach (self::validPostKeys as $k => $v) { // forming array of filtered / sanitized data
             switch ($k) {
                 case 'f_name':
                 case 'l_name':
-                    $postedData[$k] = $this->request->getPost($k, ["striptags", "alphanum", "trim", "string"]);
+                    $filteredData[$k] = $this->request->getPost($k, ["striptags", "alphanum", "trim", "string"]);
                     break;
                 case 'cc_number':
                 case 'cc_cvv':
-                    $postedData[$k] = $this->request->getPost($k, ["striptags", "alphanum", "trim", "int"]);
+                    $filteredData[$k] = $this->request->getPost($k, ["striptags", "alphanum", "trim", "int"]);
             }
-        }
+        }// here ve have filtered and sanitized array of data
         
-        $validatedData = $this->validateFilteredData($postedData); 
+        $dataValidated = $this->validateFilteredData($filteredData); 
         
-        if (!$validatedData) { // validation failed In this case we are using 
+        if (!$dataValidated) { // validation failed In this case we are using 
             
             $this->response->setStatusCode(400, 'Bad Request'); // we have already set content (if any) in validate method 
             $this->response->send();
             exit;
         } else {
-            $validatedData = $postedData;
+            $validatedData = $filteredData; // convinient name for next execution
+            $filteredData = []; // unsetting previous array to avoid misuse
         }
         
         $user = new Users(); // Here we create model for new record
